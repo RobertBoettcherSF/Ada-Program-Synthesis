@@ -31,7 +31,7 @@ package Program_Synthesis is
    end record;
 
    type Hole_Values is array (Positive range <>) of Value_Type;
-   Empty_Holes : constant Hole_Values (1 .. 0) := (others => 0);
+   Empty_Holes : constant Hole_Values (1 .. 0) := [others => 0];
 
    -- Exceptions
    Synthesis_Failed : exception;
