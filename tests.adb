@@ -56,12 +56,14 @@ begin
       P_Hole : AST_Ptr := new AST_Node'(Op_Sub,
                                         new AST_Node'(Kind => Hole, Hole_Id => 1),
                                         new AST_Node'(Kind => Hole, Hole_Id => 2));
-      Holes  : constant Hole_Values (1 .. 2) := (1 => 10, 2 => 4);
+      Holes  : constant Hole_Values (1 .. 2) := [1 => 10, 2 => 4];
    begin
       Check ("3.1 Evaluate Holes (10-4=6)", Evaluate_With_Holes (P_Hole, 0, Holes) = 6);
       
       declare
+         pragma Warnings (Off, "variable ""Result"" is assigned but never read");
          Result : Value_Type;
+         pragma Warnings (On, "variable ""Result"" is assigned but never read");
       begin
          Result := Evaluate (P_Hole, 0); -- Should fail without holes provided
          Check ("3.2 Missing Holes handled", False);
@@ -76,9 +78,9 @@ begin
    -- TEST 4 - Satisfies Contract
    Put_Line ("TEST 4 — Satisfies Contract");
    declare
-      Ex_Array : constant Example_Array := ((Input => 1, Output => 2),
+      Ex_Array : constant Example_Array := [(Input => 1, Output => 2),
                                             (Input => 2, Output => 3),
-                                            (Input => -1, Output => 0));
+                                            (Input => -1, Output => 0)];
       -- Prog 1: X + 1
       P_True : AST_Ptr := new AST_Node'(Op_Add, 
                                         new AST_Node'(Kind => Var_X), 
@@ -97,7 +99,7 @@ begin
    -- TEST 5 - Synthesize_By_Example (Exact Constant)
    Put_Line ("TEST 5 — Inductive Synthesis (Constant)");
    declare
-      Ex     : constant Example_Array := ((Input => 5, Output => 2), (Input => 10, Output => 2));
+      Ex     : constant Example_Array := [(Input => 5, Output => 2), (Input => 10, Output => 2)];
       Result : AST_Ptr;
    begin
       Result := Synthesize_By_Example (Ex, Max_Budget => 1);
@@ -110,7 +112,7 @@ begin
    -- TEST 6 - Synthesize_By_Example (Variable Match)
    Put_Line ("TEST 6 — Inductive Synthesis (Variable)");
    declare
-      Ex     : constant Example_Array := ((Input => -5, Output => -5), (Input => 42, Output => 42));
+      Ex     : constant Example_Array := [(Input => -5, Output => -5), (Input => 42, Output => 42)];
       Result : AST_Ptr;
    begin
       Result := Synthesize_By_Example (Ex, Max_Budget => 1);
@@ -123,7 +125,7 @@ begin
    -- TEST 7 - Synthesize_By_Example (Simple Operation)
    Put_Line ("TEST 7 — Inductive Synthesis (Operation)");
    declare
-      Ex     : constant Example_Array := ((Input => 0, Output => 1), (Input => 2, Output => 3));
+      Ex     : constant Example_Array := [(Input => 0, Output => 1), (Input => 2, Output => 3)];
       Result : AST_Ptr;
    begin
       -- Budget 3 means 1 Op + 2 Leaves
@@ -139,7 +141,7 @@ begin
    Put_Line ("TEST 8 — Inductive Synthesis (Failure)");
    declare
       -- Budget 1 is too small to build X + 5
-      Ex : constant Example_Array := ((Input => 0, Output => 5), (Input => 1, Output => 6));
+      Ex : constant Example_Array := [(Input => 0, Output => 5), (Input => 1, Output => 6)];
    begin
       declare
          Res : AST_Ptr := Synthesize_By_Example (Ex, Max_Budget => 1);
@@ -157,7 +159,7 @@ begin
    -- TEST 9 - Synthesize_From_Sketch (Single Hole)
    Put_Line ("TEST 9 — Sketching Synthesis (1 Hole)");
    declare
-      Ex     : constant Example_Array := ((Input => 1, Output => 6), (Input => 2, Output => 7));
+      Ex     : constant Example_Array := [(Input => 1, Output => 6), (Input => 2, Output => 7)];
       -- X + ?1
       Sketch : AST_Ptr := new AST_Node'(Op_Add,
                                         new AST_Node'(Kind => Var_X),
@@ -174,7 +176,7 @@ begin
    -- TEST 10 - Synthesize_From_Sketch (Multi Hole)
    Put_Line ("TEST 10 — Sketching Synthesis (2 Holes)");
    declare
-      Ex     : constant Example_Array := ((Input => 0, Output => -1), (Input => 1, Output => -1));
+      Ex     : constant Example_Array := [(Input => 0, Output => -1), (Input => 1, Output => -1)];
       -- ?1 - ?2 (target 1 - 2, 0 - 1, etc. which evaluates to -1)
       Sketch : AST_Ptr := new AST_Node'(Op_Sub,
                                         new AST_Node'(Kind => Hole, Hole_Id => 1),
@@ -193,7 +195,7 @@ begin
    -- TEST 11 - Synthesize_From_Sketch (Failure)
    Put_Line ("TEST 11 — Sketching Synthesis (Failure)");
    declare
-      Ex     : constant Example_Array := ((Input => 0, Output => 100));
+      Ex     : constant Example_Array := [(Example'(Input => 0, Output => 100))];
       Sketch : AST_Ptr := new AST_Node'(Op_Add,
                                         new AST_Node'(Kind => Var_X),
                                         new AST_Node'(Kind => Hole, Hole_Id => 1));
@@ -229,7 +231,7 @@ begin
       Free (Eq_L); Free (Eq_R); Free (Res);
    end;
 
-   -- TEST 13 - Deductive Synthesis (Nested Deduction)
+   -- TEST 13 - Deductive Synthesis (Nested Isolate)
    Put_Line ("TEST 13 — Deductive Synthesis (Nested Isolate)");
    declare
       -- (Out + 1) - 2 = X
@@ -249,7 +251,7 @@ begin
       Free (Eq_L); Free (Eq_R); Free (Res);
    end;
 
-   -- TEST 14 - Deductive Synthesis (Right-hand Subtraction)
+   -- TEST 14 - Deductive Synthesis (Right Subtraction)
    Put_Line ("TEST 14 — Deductive Synthesis (Right Subtraction)");
    declare
       -- 10 - Out = X
