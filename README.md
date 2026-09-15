@@ -4,20 +4,23 @@ This project provides a complete, strongly-typed implementation of Program Synth
 
 ## Features
 
-* Inductive Synthesis (Programming by Example): Employs a bottom-up enumerative search algorithm exploring AST spaces by increasing node budgets to find minimal programs satisfying given input/output examples.
-* Sketching: Resolves partially specified programs containing holes (?1, ?2) by searching a bounded constant space to complete the template against behavioral specifications.
-* Deductive Synthesis: Implements constructive proof synthesis by systematically applying algebraic rewrite rules across equation trees (Left = Right) to isolate the target output variable and produce an explicit program.
-* Robust Typing and Contract Aspects: Employs dedicated domain types (Value_Type, Example, Node_Kind, AST_Node) with explicit Ada contract aspects (Pre, Post).
-* Deterministic Memory Management: Clean AST cloning, recursive destruction via Ada.Unchecked_Deallocation, and isolated exception handling with zero memory leakage.
+* **Inductive Synthesis (Programming by Example)**: Employs a bottom-up enumerative search algorithm exploring AST spaces by increasing node budgets to find minimal programs satisfying given input/output examples.
+* **Sketching**: Resolves partially specified programs containing holes (`?1`, `?2`) by searching a bounded constant space to complete the template against behavioral specifications.
+* **Deductive Synthesis**: Implements constructive proof synthesis by systematically applying algebraic rewrite rules across equation trees (`Left = Right`) to isolate the target output variable and produce an explicit program.
+* **Robust Typing and Contract Aspects**: Employs dedicated domain types (`Value_Type`, `Example`, `Node_Kind`, `AST_Node`) with explicit Ada contract aspects (`Pre`, `Post`).
+* **Deterministic Memory Management**: Clean AST cloning, recursive destruction via `Ada.Unchecked_Deallocation`, and isolated exception handling with zero memory leakage.
 
 ## Usage
 
 Build and run the test suite directly from the command line:
 
+```bash
 make test
+```
 
 Expected output:
 
+```text
 --- Starting Program Synthesis Tests ---
 TEST 1 — Evaluate Constants and Variables
   PASS — 1.1 Evaluate Constant C=42
@@ -81,18 +84,19 @@ TEST 15 — Deductive Synthesis (Failure)
   PASS — 15.3 Graceful exit
 
 === 45 passed, 0 failed ===
+```
 
 ## Testing
 
-The test suite (tests.adb) serves as an automated verification and validation framework as well as an executable reference for the package API:
+The test suite (`tests.adb`) serves as an automated verification and validation framework as well as an executable reference for the package API:
 
-* Functional Correctness: Confirms that synthesized programs accurately mirror mathematical specifications and evaluate reliably across positive, negative, and zero values.
-* Edge Cases: Tests evaluation boundaries, single-node AST structures, nested expression chains, and asymmetric algebraic equations.
-* Invariants: Verifies that AST cloning maintains structural semantics and that synthesis engines preserve input trees without unintended mutations.
-* Error Handling: Exercises deliberate failure paths where synthesis budgets are exceeded, sketches are unsatisfiable, or term rewriting cannot eliminate terms, validating that Synthesis_Failed and Evaluation_Error are raised predictably.
+* **Functional Correctness**: Confirms that synthesized programs accurately mirror mathematical specifications and evaluate reliably across positive, negative, and zero values.
+* **Edge Cases**: Tests evaluation boundaries, single-node AST structures, nested expression chains, and asymmetric algebraic equations.
+* **Invariants**: Verifies that AST cloning maintains structural semantics and that synthesis engines preserve input trees without unintended mutations.
+* **Error Handling**: Exercises deliberate failure paths where synthesis budgets are exceeded, sketches are unsatisfiable, or term rewriting cannot eliminate terms, validating that `Synthesis_Failed` and `Evaluation_Error` are raised predictably.
 
 ## Building
 
-* Prerequisites: GNAT compiler toolchain (gnatmake, gprbuild).
-* Language Standard: Ada 2023 (ISO/IEC 8652:2023) enabled via -gnat2022.
-* Compilation Profile: Strict warning enforcement using -gnatwa with clean zero-warning builds.
+* **Prerequisites**: GNAT compiler toolchain (`gnatmake`, `gprbuild`).
+* **Language Standard**: Ada 2023 (ISO/IEC 8652:2023) enabled via `-gnat2022`.
+* **Compilation Profile**: Strict warning enforcement using `-gnatwa` with clean zero-warning builds.
