@@ -127,7 +127,8 @@ package body Program_Synthesis is
             Free (P);
             if Stop then return; end if;
          end;
-         for C in Value_Type range -1 .. 2 loop
+         -- Prioritize simplest non-negative constants (0, 1, 2) before negative values (-1)
+         for C in Value_Type range 0 .. 2 loop
             declare
                P : AST_Ptr := new AST_Node'(Kind => Const_Val, Value => C);
             begin
@@ -136,6 +137,13 @@ package body Program_Synthesis is
                if Stop then return; end if;
             end;
          end loop;
+         declare
+            P : AST_Ptr := new AST_Node'(Kind => Const_Val, Value => -1);
+         begin
+            Handler (P, Stop);
+            Free (P);
+            if Stop then return; end if;
+         end;
       elsif Budget >= 3 then
          for L_B in 1 .. Budget - 2 loop
             declare
@@ -235,7 +243,7 @@ package body Program_Synthesis is
    is
       Max_Id : constant Natural := Count_Holes (Sketch);
       subtype Hole_Array is Hole_Values (1 .. Max_Id);
-      Current_Holes : Hole_Array := (others => -Max_Val);
+      Current_Holes : Hole_Array := [others => -Max_Val];
       Found : Boolean := False;
 
       procedure Enumerate_Holes (Index : Positive) is
